@@ -76,7 +76,7 @@ Soporta IPv4 y los protocolos TCP/UDP/HTTP/FTP
 El consumo de energía dependerá de diferentes factores, como el modo en el que se esté trabajando, el ESP8266, de los protocolos que estemos utilizando, de los protocolos que estemos utilizando, de la calidad de la señal WiFi y sobre todo de sí enviamos o recibimos información a través de la WiFi. Oscilan entre los 0,5 μA (microamperios) cuando el dispositivo está apagado y los 170 mA cuando transmitimos a tope de señal.
 
 ## Diagrama de placa ESP8266-01
-![Imagen](imgs/pines_esp8266png)
+![Imagen](imgs/pines_esp8266.png)
 
 ### Pines
 1. Tierra (Conectada a la tierra de Arduino y si se tiene fuentes de alimentación externa, conectar tierra común).
