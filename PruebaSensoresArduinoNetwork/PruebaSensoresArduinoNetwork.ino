@@ -29,7 +29,7 @@ void setup() {
   // Inicializamos comunicación serie
   Serial.begin(115200);
   // Comenzamos el sensor DHT
-  dht.begin();
+  //dht.begin();
   pinMode(pinled, OUTPUT);
   pinMode(buzzer,OUTPUT);
   pinMode(pinventi,OUTPUT);
@@ -48,7 +48,7 @@ void loop() {
   Serial.print("Temperatura: ");
   Serial.print(temperatura);
   Serial.println("°C");
-
+/*
   if (temperatura >= 30) {
     digitalWrite(pinled, HIGH);
     tone(buzzer,400);
@@ -59,13 +59,13 @@ void loop() {
     noTone(buzzer);
     digitalWrite(pinventi, LOW);
   }
-
+*/
   // ----------LUMINOSIDAD----------
   // Leemos el voltaje producido por la fotoresistencia
   V = analogRead(LDRPin);
   // Calculamos la luminosidad en base al cálculo anterior
   iluminacion = ((long)V*A*10)/((long)B*Rc*(1024-V));
-  /*Serial.print("Iluminación: ");
+  Serial.print("Iluminación: ");
   Serial.print(iluminacion);
   Serial.println(" lumens");
 
@@ -76,7 +76,7 @@ void loop() {
   } else {
     digitalWrite(pinled, LOW);
     noTone(buzzer);
-  }*/
+  }
 
   // ENVIAR PULSO DE DISPARO EN EL PIN "TRIGGER"
   digitalWrite(pintrigger, LOW);

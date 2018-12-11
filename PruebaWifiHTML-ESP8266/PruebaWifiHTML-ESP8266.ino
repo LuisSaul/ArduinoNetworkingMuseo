@@ -2,7 +2,7 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
-MDNSResponder mdns;
+MDNSResponder mdns; 
 //Cambiar estos valores por los de nuestra red wifi
 const char* red = "PROFESORES";
 const char* pass = "Cualquiera12";
