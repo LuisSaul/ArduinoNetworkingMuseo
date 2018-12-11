@@ -2,6 +2,12 @@
 --------------------------------
 #  Arduino Networking Museo
 
+Autores
+-------
+* Ornelas Pérez Luis Saul
+* Paniagua Soto Rafael
+* Vallejo Herrera Juda Alector
+
 ![Imagen](imgs/Huasteca.JPG)
 
 ### Problemática
@@ -35,8 +41,15 @@ Los agentes de seguridad el Museo de Arte e Historia de Guanajuato tendrán la p
 * SPI
 * Ethernet
 
-### Sistema operativo
-* Aún no se que vayamos a poner.
+### Puertos y protocolos de comunicación
+* Puerto 80
+* Protocolo HTTP
+
+Especificaciones técnicas del equipo
+------------------------------------
+* Sistema Operativo: Ubuntu 16.04
+* Procesador: AMD Radeon R2
+* Memoria RAM: 8 GB
 
 # Introducción a placa Ethernet Shield W5100
 ### Hardware Ethernet en Arduino
@@ -54,3 +67,10 @@ Soporta IPv4 y los protocolos TCP/UDP/HTTP/FTP
 
 # Esquema general del sistema
 ![Imagen](imgs/Esquema.JPG)
+
+# Diagrama de componentes
+![Imagen](imgs/Componentes.JPG)
+
+Resultados de la Práctica
+-------------------------
+### Armado del circuito y Montaje de la maqueta
