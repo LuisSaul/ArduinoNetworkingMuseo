@@ -2,6 +2,11 @@
 --------------------------------
 #  Arduino Networking Museo
 
+### Comentario para el profesor Carlos Rafael Levy Rojas
+Le dejamos la liga al repositorio sobre cómo manejar y programar el módulo WIFI ESP8266 (Práctica Extra)
+Gracias
+https://github.com/jalector/ESP8266
+
 Autores
 -------
 * Ornelas Pérez Luis Saul
