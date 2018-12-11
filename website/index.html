@@ -1,10 +1,75 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arta e historia</title>
+    <title>Arte e historia</title>
+    <link rel="stylesheet" href="./libs/animate.css">
+    <link rel="stylesheet" href="./libs/bootstrap.css">
+    <script src="./libs/jquery.js"></script>
+    <script src="./libs/popper.js"></script>
+    <script src="./libs/bootstrap.js"></script>
+    <script src="./libs/Chart.js"></script>
+    <script src="./libs/notify.js"></script>
+    <style>
+        body {
+            background: url('imgs/bg.jpg');
+            background-size: cover;
+        }
+
+        .page {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px auto 10px auto;
+            box-shadow: 5px 5px 9px -3px black;
+        }
+    </style>
 </head>
-<body>
-    
+
+<body class="mb-5 pb-5 pt-2">
+    <div class="container-fluid">
+        <div class="page col-10 text-center">
+                <h1>Museo de arte e historia de Guanajuato</h1>
+        </div>
+
+                <div class="page col-9  mt-5">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th> Temperatura </th>
+                        <th> Luminosidad </th>
+                        <th> Distancia </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="temp"> # </td>
+                        <td id="lumi"> # </td>
+                        <td id="dist"> # </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-0 mx-auto mb-3">
+                <button id="on-venti" class="btn btn-success" type="button"> Prender ventilador</button>
+                <button id="off-venti" class="btn btn-danger" type="button"> Apagar ventilador</button>
+            </div>
+        </div>
+        <div class="col-9 mx-auto">
+            <div id="alert-dist" class="alert alert-danger"> Alarma de distancia activa </div>
+            <div id="alert-lumi" class="alert alert-danger"> Alarma de iluminación activa </div>
+            <div id="alert-temp" class="alert alert-danger"> Alarma de temperatura activa </div>
+        </div>
+        <div class="page col-9 m-auto">
+            <canvas id="chart"></canvas>
+        </div>
+    </div>
+
+
+
+    <script src="index.js"></script>
 </body>
+
 </html>

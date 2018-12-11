@@ -47,8 +47,8 @@ int ledRojo = 5;
 int ledVerde = 4;
 int ledAzul = 3;
 
-void setup()
-{
+boolean ventiGET = false;
+void setup(){
   Serial.begin(9600);
 
   Ethernet.begin(mac, ip);
@@ -89,7 +89,7 @@ void loop() {
   Serial.print("Distancia");
   Serial.println(distancia);*/
   //los colores de cada componente son: Temperetura: Rojo, Fotoresistencia: Verde, Ultrasonico: Azul
-  if (temperatura >= 40 && iluminacion >= 50 && distancia <= 20) {
+  if (temperatura >= 40 && iluminacion >= 50 && distancia <= 8) {
     //Serial.println("Todos los sensores");
     //Se guarda el tipo de alarma que esta activada
     tipoAlarma =7;
@@ -114,7 +114,7 @@ void loop() {
     digitalWrite(pinventi, HIGH);
     delay(500);
   }
-  else if (temperatura >= 40 && distancia <= 20) {
+  else if (temperatura >= 40 && distancia <= 8) {
     //Serial.println("Temp y dist");
     //Se guarda el tipo de alarma que esta activada
     tipoAlarma =5;
@@ -126,14 +126,16 @@ void loop() {
     digitalWrite(pinventi, HIGH);
     delay(500);
   }
-  else if (iluminacion >= 50 && distancia <= 20) {
+  else if (iluminacion >= 50 && distancia <= 8) {
     //Serial.println("Ilum y dist");
     //Se guarda el tipo de alarma que esta activada
     tipoAlarma =4;
     //Se prende el led RGB en color cyan
     Color(0,255,255);
     //Apagar el ventilador si estuviera prendido
-    digitalWrite(pinventi, LOW);
+    if( !ventiGET ) {
+      digitalWrite(pinventi, LOW);
+    }
     //Accionar el tipo de alarma, cuando se acciona la alarma de iluminosidad y distancia
     tone(buzzer,800);
     delay(500);
@@ -159,10 +161,12 @@ void loop() {
     //Accionar el tipo de alarma, para iluminosidad
     tone(buzzer,400);
     //Apagar el ventilador si estuviera prendido
-    digitalWrite(pinventi, LOW);
+    if( !ventiGET ) {
+      digitalWrite(pinventi, LOW);
+    }
     delay(500);
   }
-  else if (distancia <= 20) {
+  else if (distancia <= 8) {
     //Serial.println("Distancia");
     //Se guarda el tipo de alarma que esta activada
     tipoAlarma =1;
@@ -171,7 +175,9 @@ void loop() {
     //Accionar el tipo de alarma, para distancia
     tone(buzzer,600);
     //Apagar el ventilador si estuviera prendido
-    digitalWrite(pinventi, LOW);
+    if( !ventiGET ) {
+      digitalWrite(pinventi, LOW);
+    }
     delay(500);
   }else{
     //Serial.println("Default");
@@ -182,7 +188,9 @@ void loop() {
     //Apagar la bocina si no estan activadas las alarmas de iluminosidad o distancia
     noTone(buzzer);
     //Prender el ventilador
-    digitalWrite(pinventi, LOW);
+    if( !ventiGET ) {
+      digitalWrite(pinventi, LOW);
+    }
     delay(500);
   }
   // ENVIAR PULSO DE DISPARO EN EL PIN "TRIGGER"
@@ -203,7 +211,7 @@ void loop() {
 
   EthernetClient client = server.available();
   if (client)  {
-    Serial.println("new client");
+   //------------- Serial.println("new client");
     bool currentLineIsBlank = true;
     String cadena = "";
     while (client.connected()) {
@@ -216,30 +224,26 @@ void loop() {
 
           // Buscar campo data
           int posicion = cadena.indexOf("data");
-          Serial.println( cadena );
+           Serial.println( cadena );
           String command = cadena.substring(posicion);
-/*        Prueba luis llamas, IGNORAR
- *        Sirve para saber la forma en la cual se reciben los datos desde el método get
-          if (command == "data1=0") {
-            digitalWrite(pinLed1, HIGH);
+         //Prueba luis llamas, IGNORAR
+         //Sirve para saber la forma en la cual se reciben los datos desde el método get
+         
+          if (command == "data1=0") { //Ventilador
+            digitalWrite(pinventi, LOW);
+            ventiGET = false;
+          } else if (command == "data1=1") {
+            digitalWrite(pinventi, HIGH);
+            ventiGET = true;
+          } else if (command == "data2=0") {
+            //digitalWrite(pinLed2, LOW);
+          } else if (command == "data2=1"){
+            //digitalWrite(pinLed2, HIGH);
           }
-          else if (command == "data1=1")
-          {
-            digitalWrite(pinLed1, LOW);
-          }
-          else if (command == "data2=0")
-          {
-            digitalWrite(pinLed2, LOW);
-          }
-          else if (command == "data2=1")
-          {
-            digitalWrite(pinLed2, HIGH);
-          }*/
         }
 
         // Al recibir linea en blanco, servir página a cliente
-        if (c == '\n' && currentLineIsBlank)
-        {
+        if (c == '\n' && currentLineIsBlank) {
           /* Variable de tipo alarma, para saber que alarmas estan activas
            * 7 Todas las alarmas
            * 6 Temperatura e iluminación
