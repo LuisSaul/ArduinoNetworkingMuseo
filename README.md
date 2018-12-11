@@ -86,4 +86,6 @@ Resultados de la Práctica
 ### Página web del sistema 
 ![Imagen](imgs/website01.jpeg)
 ![Imagen](imgs/website02.jpeg)
+
+### Página web del sistema vista desde un dispositivo móvil
 ![Imagen](imgs/website03.jpeg)
