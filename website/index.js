@@ -1,24 +1,40 @@
+
+//Declaración de varilabes
+/** Variable que ayudará a dibujar sobre el lienzo canvas */
 let ctx = document.getElementById("chart").getContext('2d');
+/** Variables para los datos de los sensores (para gráficar) */
 let temp = [];
 let lum = [];
 let dist = [];
 let label = [];
 let times = 0;
+
+/** Chart, es la variable que nos ayuda con la gestión de
+ * el lienzo canvas y ayuda a interpretar, acutalizar y
+ * eliminiar valores */
 let chart; 
 
+/** Campos necesarios para acutalizar los valores que están en 
+ * curso en la tabla superiror*/
 let viewTemp = $('#temp');
 let viewLumi = $('#lumi');
 let viewDist = $('#dist');
 
+/** Mensajes de alerta para cada una de las alertas del sistema */
 let alertTemp = $('#alert-temp'); alertTemp.hide();
 let alertLumi = $('#alert-lumi'); alertLumi.hide();
 let alertDist = $('#alert-dist'); alertDist.hide();
 
+/** Botones para prender y apagar el vetilador */
 let on = $('#on-venti');
 let off = $('#off-venti');
 
+/** Creamos la gŕafica  y obtenemos los primeros valores de los 
+ * sensores */
 createChart();
+getSensorData();
 
+/** Función que inicializa el canvas con una gráfica */
 function createChart(){
     chart = new Chart(ctx, {
         type: 'line',
@@ -63,6 +79,8 @@ function createChart(){
     });
 }
 
+/** Función que se utiliza para llamar al servicio web
+ * y ayuda también a enviar información al arudino */
 function getSensorData( data){
     $.ajax({
         url: 'http://192.168.1.177',
@@ -82,6 +100,8 @@ function getSensorData( data){
     });
 }
 
+/** Esta función permiete que sólo se mantengas 10 datos
+ * en la gráfica */
 function pushNewData(temperatura, luminosidad, distancia){
     viewTemp.html(temperatura)
     viewLumi.html(luminosidad)
@@ -100,6 +120,8 @@ function pushNewData(temperatura, luminosidad, distancia){
     chart.update();
 }
 
+/** Esta función evalua el número y con respecto a sus bites
+ * se muestran o esconden las alertas */
 function showAlerts( numero ){
     numero = parseInt( numero );
     switch( numero ){
@@ -145,20 +167,28 @@ function showAlerts( numero ){
         break;
     }
 }
-setInterval(() => {
-    getSensorData();
-    // pushNewData(
-    //     Math.ceil(Math.random(100)*100),
-    //     Math.ceil(Math.random(100)*100),
-    //     Math.ceil(Math.random(100)*100)
-    // )
-    // showAlerts(Math.ceil((Math.random(6)*10) % 7));
-},15000)
 
+/** Se declara una función que trae los datos periodicamente */
+setInterval(() => {
+
+    //getSensorData();
+
+
+    /** Datos ficticios */
+     pushNewData(
+         Math.ceil(Math.random(100)*100),
+         Math.ceil(Math.random(100)*100),
+         Math.ceil(Math.random(100)*100)
+     )
+     showAlerts(Math.ceil((Math.random(6)*10) % 7));
+},5000)
+
+/** Enviamos 1 para prender el ventilador */
 on.click(( e ) => {
     getSensorData(1);
 })
 
+/** Enviamos 0 para apagar el ventilador */
 off.click(( e ) => {
     getSensorData(0);
 })
