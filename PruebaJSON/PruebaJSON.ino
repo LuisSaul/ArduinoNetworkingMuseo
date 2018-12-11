@@ -5,20 +5,17 @@ byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 IPAddress ip(192, 168, 1, 177);
 EthernetServer server(80);
 
-const int pinLed1 = 4;
-const int pinLed2 = 5;
-
 // Definimos el pin analógico donde se conecta el sensor de temperatura
 #define sensorT A1
 // Definimos el pin analógico donde se conecta la fotoresistencia
 #define LDRPin A0
 
-#define buzzer 13
-const int pinventi = 7;
+#define buzzer 9
+const int pinventi = 8;
 
 // DECLARACION DE VARIABLES PARA PINES DE ULTRASONICO
-const int pinecho = 9;
-const int pintrigger = 8;
+const int pinecho = 6;
+const int pintrigger = 7;
 
 // VARIABLES PARA CALCULOS
 unsigned int tiempo, distancia;
@@ -34,6 +31,13 @@ const int Rc = 10; //Resistencia calibracion en KΩ
 int V = 0;
 int iluminacion = 0;
 
+int bocinaActiva = 0;
+int ventiladorActivo = 0;
+
+int ledRojo = 5;
+int ledVerde = 4;
+int ledAzul = 3;
+
 void setup()
 {
   Serial.begin(9600);
@@ -43,17 +47,18 @@ void setup()
 
   Serial.print("server is at ");
   Serial.println(Ethernet.localIP());
-
-  pinMode(pinLed1, OUTPUT);
-  pinMode(pinLed2, OUTPUT);
-  digitalWrite(pinLed1, LOW);
-  digitalWrite(pinLed2, LOW);
-
+  
   pinMode(buzzer,OUTPUT);
   pinMode(pinventi,OUTPUT);
   // CONFIGURAR PINES DE ENTRADA Y SALIDA
   pinMode(pinecho, INPUT);
   pinMode(pintrigger, OUTPUT);
+
+  //Configurar pines para led RGB
+  
+  pinMode(ledRojo, OUTPUT);
+  pinMode(ledVerde, OUTPUT);
+  pinMode(ledAzul, OUTPUT);
 }
 
 void loop() {
@@ -62,13 +67,87 @@ void loop() {
   voltaje = analogRead(sensorT)*3.3/1023;
   // Calculamos la temperatura en base al cálculo anterior
   temperatura = voltaje*100;
-
+  
   // ----------LUMINOSIDAD----------
   // Leemos el voltaje producido por la fotoresistencia
   V = analogRead(LDRPin);
   // Calculamos la luminosidad en base al cálculo anterior
   iluminacion = ((long)V*A*10)/((long)B*Rc*(1024-V));
-  
+  /*Serial.print("Temperatura");
+  Serial.println(temperatura);
+  Serial.print("Iluminacion");
+  Serial.println(iluminacion);
+  Serial.print("Distancia");
+  Serial.println(distancia);*/
+  //los colores de cada componente son: Temperetura: Rojo, Fotoresistencia: Verde, Ultrasonico: Azul
+  if (temperatura >= 40 && iluminacion >= 50 && distancia <= 20) {
+    Serial.println("Todos los sensores");
+    //Se prende el led RGB en color blanco
+    Color(255,255,255);
+    tone(buzzer,800);
+    digitalWrite(pinventi, HIGH);
+    delay(500);
+  }
+  else if (temperatura >= 40 && iluminacion >= 50) {
+    //Se prende el led RGB en color amarillo
+    Serial.println("Temp y ilum");
+    
+    //Se prende el led RGB en color amarillo
+    Color(255,255,0);
+    tone(buzzer,400);
+    digitalWrite(pinventi, HIGH);
+    delay(500);
+  }
+  else if (temperatura >= 40 && distancia <= 20) {
+    Serial.println("Temp y dist");
+    
+    //Se prende el led RGB en color rosa
+    Color(255,0,255);
+    tone(buzzer,600);
+    digitalWrite(pinventi, HIGH);
+    delay(500);
+  }
+  else if (iluminacion >= 50 && distancia <= 20) {
+    Serial.println("Ilum y dist");
+    
+    //Se prende el led RGB en color cyan
+    Color(0,255,255);
+    digitalWrite(pinventi, LOW);
+    tone(buzzer,800);
+    //tone(buzzer,800);
+    delay(500);
+  }
+  else if (temperatura >= 40) {
+    Serial.println("Temperatura");
+    //Se prende el led RGB en color rojo
+    Color(255,0,0);
+    noTone(buzzer);
+    digitalWrite(pinventi, HIGH);
+    delay(500);
+  }
+  else if (iluminacion >= 50) {
+    Serial.println("Iluminiacion");
+    //Se prende el led RGB en color verde
+    Color(0,255,0);
+    tone(buzzer,400);
+    digitalWrite(pinventi, LOW);
+    delay(500);
+  }
+  else if (distancia <= 20) {
+    Serial.println("Distancia");
+    //Se prende el led RGB en color azul
+    Color(0,0,255);
+    tone(buzzer,600);
+    digitalWrite(pinventi, LOW);
+    delay(500);
+  }else{
+    Serial.println("Default");
+    //Se prende el led RGB en color naranja
+    Color(255,117,20);
+    noTone(buzzer);
+    digitalWrite(pinventi, LOW);
+    delay(500);
+  }
   // ENVIAR PULSO DE DISPARO EN EL PIN "TRIGGER"
   digitalWrite(pintrigger, LOW);
   delayMicroseconds(2);
@@ -86,28 +165,24 @@ void loop() {
 
 
   EthernetClient client = server.available();
-  if (client)
-  {
+  if (client)  {
     Serial.println("new client");
     bool currentLineIsBlank = true;
     String cadena = "";
-    while (client.connected())
-    {
-      if (client.available())
-      {
+    while (client.connected()) {
+      if (client.available()) {
         char c = client.read();
         Serial.write(c);
 
-        if (cadena.length() < 50)
-        {
+        if (cadena.length() < 50){
           cadena.concat(c);
 
           // Buscar campo data
           int posicion = cadena.indexOf("data");
+          Serial.println( cadena );
           String command = cadena.substring(posicion);
-
-          if (command == "data1=0")
-          {
+/*
+          if (command == "data1=0") {
             digitalWrite(pinLed1, HIGH);
           }
           else if (command == "data1=1")
@@ -121,43 +196,25 @@ void loop() {
           else if (command == "data2=1")
           {
             digitalWrite(pinLed2, HIGH);
-          }
+          }*/
         }
 
         // Al recibir linea en blanco, servir página a cliente
         if (c == '\n' && currentLineIsBlank)
         {
-          client.println(F("HTTP/1.1 200 OK\nContent-Type: text/html"));
+          
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-Type: application/json;charset=utf-8");
+          
           client.println();
-
-          client.println(F("<html>\n<head>\n<title>Luis Llamas</title>\n</head>\n<body>"));
-          client.println(F("<div style='text-align:center;'>"));
-          client.println(F("<h2>Salidas digitales</h2>"));
-
-          client.print(F("Estado LED 1 = "));
-          client.println(digitalRead(pinLed1) == LOW ? "OFF" : "ON");
-          client.println(F("<br/>"));
-          client.println(F("<button onClick=location.href='./?data1=0'>ON</button>"));
-          client.println(F("<button onClick=location.href='./?data1=1'>OFF</button>"));
-          client.println(F("<br/><br/>"));
-
-          client.print(F("Estado LED 2 = "));
-          client.println(digitalRead(pinLed2) == LOW ? "OFF" : "ON");
-          client.println(F("<br/>"));
-          client.println(F("<button onClick=location.href='./?data2=0'>ON</button>"));
-          client.println(F("<button onClick=location.href='./?data2=1'>OFF</button>"));
-          client.println(F("<br/>"));
-          client.println(F("<h1>Temperatura: "));
-          client.println(temperatura);
-          client.println(F(" grados C.</h1><br>"));
-          client.println(F("<h1>Luminosidad: "));
-          client.println(iluminacion);
-          client.println(F(" lumens.</h1><br>"));
-          client.println(F("<h1>Distancia: "));
-          client.println(distancia);
-          client.println(F(" cm.</h1><br>"));
-          client.println(F("<a href='http://192.168.1.177'>Refrescar</a>"));
-          client.println(F("</div>\n</body></html>"));
+          client.print(F("{\"temp\": \""));
+          client.print(temperatura);
+          client.print(F("\", \"lumels\": \""));
+          client.print(iluminacion);
+          client.print(F("\", \"super\": \""));
+          client.print(distancia);
+          client.println(F("\"}"));
+          client.println();
           break;
         }
         if (c == '\n')
@@ -174,4 +231,10 @@ void loop() {
     delay(1);
     client.stop();
   }
+}
+
+void Color(int R, int G, int B) {
+  analogWrite(ledRojo, R) ;   // Red    - Rojo
+  analogWrite(ledVerde, G) ;   // Green - Verde
+  analogWrite(ledAzul, B) ;   // Blue - Azul
 }
