@@ -30,8 +30,17 @@ const int Rc = 10; //Resistencia calibracion en KΩ
 // Declaramos variables necesarias para calcular la luminosidad
 int V = 0;
 int iluminacion = 0;
-
-int bocinaActiva = 0;
+/* Variable de tipo alarma, para saber que alarmas estan activas
+ * 7 Todas las alarmas
+ * 6 Temperatura e iluminación
+ * 5 Temperatura y distancia
+ * 4 Iluminación y distancia
+ * 3 Temperatura
+ * 2 Iluminación
+ * 1 Distancia
+ * 0 Ninguna activada
+ */
+int tipoAlarma = 0;
 int ventiladorActivo = 0;
 
 int ledRojo = 5;
@@ -81,70 +90,98 @@ void loop() {
   Serial.println(distancia);*/
   //los colores de cada componente son: Temperetura: Rojo, Fotoresistencia: Verde, Ultrasonico: Azul
   if (temperatura >= 40 && iluminacion >= 50 && distancia <= 20) {
-    Serial.println("Todos los sensores");
+    //Serial.println("Todos los sensores");
+    //Se guarda el tipo de alarma que esta activada
+    tipoAlarma =7;
     //Se prende el led RGB en color blanco
     Color(255,255,255);
+    //Accionar el tipo de alarma, cuando se acciona la alarma de iluminosidad y distancia
     tone(buzzer,800);
+    //Prender el ventilador
     digitalWrite(pinventi, HIGH);
     delay(500);
   }
   else if (temperatura >= 40 && iluminacion >= 50) {
     //Se prende el led RGB en color amarillo
-    Serial.println("Temp y ilum");
-    
+    //Serial.println("Temp e ilum");
+    //Se guarda el tipo de alarma que esta activada
+    tipoAlarma =6;
     //Se prende el led RGB en color amarillo
     Color(255,255,0);
+    //Accionar el tipo de alarma, para la iluminación
     tone(buzzer,400);
+    //Prender el ventilador
     digitalWrite(pinventi, HIGH);
     delay(500);
   }
   else if (temperatura >= 40 && distancia <= 20) {
-    Serial.println("Temp y dist");
-    
+    //Serial.println("Temp y dist");
+    //Se guarda el tipo de alarma que esta activada
+    tipoAlarma =5;
     //Se prende el led RGB en color rosa
     Color(255,0,255);
+    //Accionar el tipo de alarma, para la distancia
     tone(buzzer,600);
+    //Prender el ventilador
     digitalWrite(pinventi, HIGH);
     delay(500);
   }
   else if (iluminacion >= 50 && distancia <= 20) {
-    Serial.println("Ilum y dist");
-    
+    //Serial.println("Ilum y dist");
+    //Se guarda el tipo de alarma que esta activada
+    tipoAlarma =4;
     //Se prende el led RGB en color cyan
     Color(0,255,255);
+    //Apagar el ventilador si estuviera prendido
     digitalWrite(pinventi, LOW);
+    //Accionar el tipo de alarma, cuando se acciona la alarma de iluminosidad y distancia
     tone(buzzer,800);
-    //tone(buzzer,800);
     delay(500);
   }
   else if (temperatura >= 40) {
-    Serial.println("Temperatura");
+    //Serial.println("Temperatura");
+    //Se guarda el tipo de alarma que esta activada
+    tipoAlarma =3;
     //Se prende el led RGB en color rojo
     Color(255,0,0);
+    //Apagar la bocina si no estan activadas las alarmas de iluminosidad o distancia
     noTone(buzzer);
+    //Prender el ventilador
     digitalWrite(pinventi, HIGH);
     delay(500);
   }
   else if (iluminacion >= 50) {
-    Serial.println("Iluminiacion");
+    //Serial.println("Iluminiacion");
+    //Se guarda el tipo de alarma que esta activada
+    tipoAlarma =2;
     //Se prende el led RGB en color verde
     Color(0,255,0);
+    //Accionar el tipo de alarma, para iluminosidad
     tone(buzzer,400);
+    //Apagar el ventilador si estuviera prendido
     digitalWrite(pinventi, LOW);
     delay(500);
   }
   else if (distancia <= 20) {
-    Serial.println("Distancia");
+    //Serial.println("Distancia");
+    //Se guarda el tipo de alarma que esta activada
+    tipoAlarma =1;
     //Se prende el led RGB en color azul
     Color(0,0,255);
+    //Accionar el tipo de alarma, para distancia
     tone(buzzer,600);
+    //Apagar el ventilador si estuviera prendido
     digitalWrite(pinventi, LOW);
     delay(500);
   }else{
-    Serial.println("Default");
+    //Serial.println("Default");
+    //Se guarda el tipo de alarma que esta activada
+    tipoAlarma =0;
     //Se prende el led RGB en color naranja
     Color(255,117,20);
+    //Apagar la bocina si no estan activadas las alarmas de iluminosidad o distancia
     noTone(buzzer);
+    //Prender el ventilador
     digitalWrite(pinventi, LOW);
     delay(500);
   }
@@ -181,7 +218,8 @@ void loop() {
           int posicion = cadena.indexOf("data");
           Serial.println( cadena );
           String command = cadena.substring(posicion);
-/*
+/*        Prueba luis llamas, IGNORAR
+ *        Sirve para saber la forma en la cual se reciben los datos desde el método get
           if (command == "data1=0") {
             digitalWrite(pinLed1, HIGH);
           }
@@ -202,7 +240,16 @@ void loop() {
         // Al recibir linea en blanco, servir página a cliente
         if (c == '\n' && currentLineIsBlank)
         {
-          
+          /* Variable de tipo alarma, para saber que alarmas estan activas
+           * 7 Todas las alarmas
+           * 6 Temperatura e iluminación
+           * 5 Temperatura y distancia
+           * 4 Iluminación y distancia
+           * 3 Temperatura
+           * 2 Iluminación
+           * 1 Distancia
+           * 0 Ninguna activada
+           */
           client.println("HTTP/1.1 200 OK");
           client.println("Content-Type: application/json;charset=utf-8");
           
@@ -211,8 +258,10 @@ void loop() {
           client.print(temperatura);
           client.print(F("\", \"lumels\": \""));
           client.print(iluminacion);
-          client.print(F("\", \"super\": \""));
+          client.print(F("\", \"distancia\": \""));
           client.print(distancia);
+          client.print(F("\", \"tipo_alarma\": \""));
+          client.print(tipoAlarma);
           client.println(F("\"}"));
           client.println();
           break;
