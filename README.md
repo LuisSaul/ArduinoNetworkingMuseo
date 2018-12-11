@@ -74,3 +74,16 @@ Soporta IPv4 y los protocolos TCP/UDP/HTTP/FTP
 Resultados de la Práctica
 -------------------------
 ### Armado del circuito y Montaje de la maqueta
+![Imagen](imgs/evidencia01.jpeg)
+![Imagen](imgs/evidencia02.jpeg)
+![Imagen](imgs/evidencia03.jpeg)
+![Imagen](imgs/evidencia04.jpeg)
+![Imagen](imgs/evidencia05.jpeg)
+![Imagen](imgs/evidencia06.jpeg)
+![Imagen](imgs/evidencia07.jpeg)
+![Imagen](imgs/evidencia08.jpeg)
+
+### Página web del sistema 
+![Imagen](imgs/website01.jpeg)
+![Imagen](imgs/website02.jpeg)
+![Imagen](imgs/website03.jpeg)
